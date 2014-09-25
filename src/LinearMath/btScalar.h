@@ -230,14 +230,40 @@ inline int	btGetVersion()
 
 #else
 
-		#define SIMD_FORCE_INLINE inline
-		///@todo: check out alignment methods for other platforms/compilers
-		///#define ATTRIBUTE_ALIGNED16(a) a __attribute__ ((aligned (16)))
-		///#define ATTRIBUTE_ALIGNED64(a) a __attribute__ ((aligned (64)))
-		///#define ATTRIBUTE_ALIGNED128(a) a __attribute__ ((aligned (128)))
-		#define ATTRIBUTE_ALIGNED16(a) a
-		#define ATTRIBUTE_ALIGNED64(a) a
-		#define ATTRIBUTE_ALIGNED128(a) a
+		#if defined (__i386__) || defined (__x86_64__)
+		#define BT_USE_SIMD_VECTOR3
+		#define BT_USE_SSE
+		//BT_USE_SSE_IN_API is enabled on Mac OSX by default, because memory is automatically aligned on 16-byte boundaries
+		//if apps run into issues, we will disable the next line
+		#define BT_USE_SSE_IN_API
+        #ifdef BT_USE_SSE
+            // include appropriate SSE level
+            #if defined (__SSE4_1__)
+                #include <smmintrin.h>
+            #elif defined (__SSSE3__)
+                #include <tmmintrin.h>
+            #elif defined (__SSE3__)
+                #include <pmmintrin.h>
+            #else
+                #include <emmintrin.h>
+            #endif
+        #endif //BT_USE_SSE
+    #elif defined( __ARM_NEON__ )
+        #ifdef __clang__
+            #define BT_USE_NEON 1
+			#define BT_USE_SIMD_VECTOR3
+		
+            #if defined BT_USE_NEON && defined (__clang__)
+                #include <arm_neon.h>
+            #endif//BT_USE_NEON
+       #endif //__clang__
+    #endif//__arm__
+
+	#define SIMD_FORCE_INLINE inline __attribute__ ((always_inline))
+///@todo: check out alignment methods for other platforms/compilers
+	#define ATTRIBUTE_ALIGNED16(a) a __attribute__ ((aligned (16)))
+	#define ATTRIBUTE_ALIGNED64(a) a __attribute__ ((aligned (64)))
+	#define ATTRIBUTE_ALIGNED128(a) a __attribute__ ((aligned (128)))
 		#ifndef assert
 		#include <assert.h>
 		#endif
