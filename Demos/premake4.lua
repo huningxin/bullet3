@@ -49,6 +49,7 @@ end
 
  local localdemos = {
     "BasicDemo",
+    "Benchmarks",
     "Box2dDemo",
     "BspDemo",
     "CcdPhysicsDemo",
