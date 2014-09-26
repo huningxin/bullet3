@@ -54,9 +54,9 @@ int main(int argc,char** argv)
 	return glutmain(argc, argv,640,480,"Bullet Physics Demo. http://bulletphysics.com",&benchmarkDemo);
 
 #else //USE_GRAPHICAL_BENCHMARK
-	int d;
+	int d = 3;
 
-	for (d=0;d<NUM_DEMOS;d++)
+	//for (d=0;d<NUM_DEMOS;d++)
 	{
 		demoArray[d]->initPhysics();
 		
@@ -72,8 +72,7 @@ int main(int argc,char** argv)
 			totalTime[d] += frameTime;
 			if (i==NUM_TESTS-1)
 				CProfileManager::dumpAll();
-
-			
+		
 		}
         demoArray[d]->exitPhysics();
 	}
